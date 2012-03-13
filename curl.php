@@ -5,6 +5,10 @@
 
   usually returns a json
 
+  $url: the url of the API
+  $type: "GET" or "POST"
+  $parameter: the values send to the API when accessing it
+
  ************************/
 
 function callAPI($url, $type, $parameter)
@@ -30,4 +34,3 @@ function callAPI($url, $type, $parameter)
 
     return $result;
 }
-

@@ -1,8 +1,15 @@
-<?php
+<!DOCTYPE html>
 
-//header("Location: https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/mapweapon.php");
-//header("Location: http://mapweapon.sinaapp.com/mapweapon.php?code=219bffbdc4b0a8a2fdde91e539e12e46");
-?>
+<!-- This is the entry page of mapweapon, get the grant from the user -->
 
-<a href="https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/mapweapon.php">shit</a>
-
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>某科学的超地图炮</title>
+    </head>
+    <body>
+        <a href="https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/key.php">发射</a>
+        <br />
+        <a href="https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/cp.php">设置</a>
+    </body>
+</html>

@@ -1,34 +1,21 @@
 <?php
-
+require_once("kvdb.php");
 require_once("curl.php");
 
 $access_token = $_POST["access_token"];
-$message = $_POST["message"];
+$uid = $_POST["uid"];
 
+/*********
 
-/********
+ get the friend list (bilateral) uid list
 
-  get the uid of current user
+ return an array
 
- ********/
-
-function get_current_user_uid()
-{
-    global $access_token;
-    $URL_get_uid = "https://api.weibo.com/2/account/get_uid.json";
-    $parameter = 'access_token='.$access_token;
-
-    $user_uid = json_decode(callAPI($URL_get_uid, "GET", $parameter), true);
-
-    $result = $user_uid["uid"];
-
-    return $result;
-}
-
+*********/
 function get_friend_list()
 {
     global $access_token;
-    $uid = get_current_user_uid();
+    global $uid;
     $api_url = "https://api.weibo.com/2/friendships/friends/bilateral/ids.json";
     $parameter = "access_token=".$access_token."&uid=".$uid;
 
@@ -39,6 +26,13 @@ function get_friend_list()
     return $result;
 }
 
+/************
+
+get a specified property value from a specified user
+
+type of the return value depends on the property value type
+
+************/
 function get_user_property($uid, $property)
 {
     global $access_token;
@@ -57,13 +51,13 @@ function get_user_property($uid, $property)
 
 property_name:
 string, properties from user info
+
 relation:
 string, EQUALS (CONTAINS, GREATER, SMALLER, EXCEPT these are not implemented))
 
-returns the filtered user [uid] list
+returns the filtered user [uid] list(array)
 
  *****************/
-
 function filter($friendlist, $property_name, $relation, $value)
 {
     $result = Array();
@@ -71,7 +65,6 @@ function filter($friendlist, $property_name, $relation, $value)
     foreach($friendlist as $uid)
     {
         $property = get_user_property($uid, $property_name);
-
         switch($relation)
         {
             case "EQUALS":
@@ -85,7 +78,6 @@ function filter($friendlist, $property_name, $relation, $value)
             case "EXCEPT":
         }
     }
-
     return $result;
 }
 
@@ -96,70 +88,73 @@ function filter($friendlist, $property_name, $relation, $value)
   return an Array(property, relation, value)
 
  *******************/
-
 function processMessage($message)
 {
+    //global $message;
     $friendlist = get_friend_list();
+    $user_uid = global $uid;
+    $defined_tags = getTagList($user_uid);
 
     // step: 1. scan the message and match the tags
     //       2. query the tag database, translate tags to conditions and filtered the friend list
     //       3. replace tags
 
-    $message = "this is a @test message @seems @女人 working now. one more test @";
-
     // step 1
 
+    // get the tag from the raw message
     preg_match_all("/@\w+|[\x{4e00}-\x{9fa5}]+/u", $message, $tags);
 
-    // SUPRE BIG LOOP
-    // FOREACH $TAGS AS $TAG, IF $TAG EXISTS, THEN
-    // BEGIN
-
-    $testTag = "@女人";
-
-    foreach(array_shift($tags) as $tag)
+    foreach($defined_tags as $defined_tag)
     {
-        if(strcmp($tag, $testTag) == 0)
+        foreach($tags as $tag)
         {
-            // step 2
-            // there need to be a foreach to iterate the tags, 
-            //     set the 3 parameters of filter, 
-            //     and filter the list
-            // following is the code in the foreach block
-
-            $property_name = "gender";
-            $relation = "EQUALS";
-            $value = 'f';
-            $friendlist = filter($friendlist, $property_name, $relation, $value);
-
-            // step 3
-            // transfer the uid list into name list
-
-            foreach($friendlist as $uid)
+            if(strcmp($tag, $defined_tag["tag_name"]) == 0)
             {
-                $namelist .= ' @'.get_user_property($uid, "screen_name");
+                // step 2
+                // there need to be a foreach to iterate the tags, 
+                //     set the 3 parameters of filter, 
+                //     and filter the list
+                // following is the code in the foreach block
+
+                $property_name = $defined_tag["property_name"];
+                $relation = $defined_tag["relation"];
+                $value = $defined_tag["value"];
+
+                $friendlist = filter($friendlist, $property_name, $relation, $value);
+
+                // step 3
+                // transfer the uid list into name list
+
+                foreach($friendlist as $uid)
+                {
+                    $namelist .= ' @'.get_user_property($uid, "screen_name");
+                }
+
+                $message = str_replace($tag, $namelist, $message);
             }
-
-            $message = str_replace($tag, $namelist, $message); // after the construct of the database, $tags should be replaced by $tag
         }
+        $result = $message;
+        return $result;
     }
-
-    $result = $message;
-
-    return $result;
 }
+/****************************
 
+send the processed message
+
+return 0 or other ...
+
+****************************/
 function sendMessage()
 {
     global $access_token;
-    global $message;
+    $message = $_POST["message"];
     $message = processMessage($message);
-    $URL_update = "https://api.weibo.com/2/statuses/update.json";
+    $url = "https://api.weibo.com/2/statuses/update.json";
     $parameter = "access_token=".$access_token."&status=".$message;
 
-    //curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/x-www-form-urlencoded; charset=utf-8"));
+    $result = callAPI($url, "POST", $parameter);
 
-    return callAPI($URL_update, $parameter);
+    return $result;
 }
 
 sendMessage();
