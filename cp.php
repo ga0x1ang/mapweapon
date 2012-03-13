@@ -28,14 +28,14 @@ if(isset($_POST["tag_name"]))
                 <th>value</th>
             </tr>
             <?php
-                foreach($defined_tags = $defined_tag)
+                foreach($defined_tags as $defined_tag)
                 {
                     echo "<tr>";
                         echo "<td>".$defined_tag["tag_name"]."</td>";
                         echo "<td>".$defined_tag["property_name"]."</td>";
                         echo "<td>".$defined_tag["relation"]."</td>";
                         echo "<td>".$defined_tag["value"]."</td>";
-                    echo "</tr>"
+                    echo "</tr>";
                 }
             ?>
         </table>
@@ -48,6 +48,8 @@ if(isset($_POST["tag_name"]))
             relation: <input type="text" name="relation">
             <br>
             value: <input type="text" name="value">
+            <br>
+            <input type="submit" value="添加">
         </form>
     </body>
 </html>

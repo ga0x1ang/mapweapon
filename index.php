@@ -5,11 +5,9 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>某科学的超地图炮</title>
+        <title>某科学的超地图炮 - 入口</title>
     </head>
     <body>
-        <a href="https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/key.php">发射</a>
-        <br />
-        <a href="https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/cp.php">设置</a>
+        <a href="https://api.weibo.com/oauth2/authorize?client_id=1629659974&response_type=code&redirect_uri=http://mapweapon.sinaapp.com/key.php">进入</a>
     </body>
 </html>

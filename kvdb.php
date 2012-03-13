@@ -1,15 +1,17 @@
 <?php
 $kv = new SaeKV();
+$kv->init();
 
 function addTag($uid, $tag_name, $property_name, $relation, $value)
 {
+    global $kv;
     // prepare the val to be stored
-    $val = json_encode(array[
+    $val = json_encode(array(
                         "tag_name" => $tag_name,
                         "property_name" => $property_name,
                         "relation" => $relation,
                         "value" => $value
-                    ]);
+                    ));
     // generate a unique key
     do
     {
@@ -36,13 +38,14 @@ function addTag($uid, $tag_name, $property_name, $relation, $value)
 
 function getTagList($uid)
 {
+    global $kv;
     $tag_list = Array();
-    $tag_keys = $kv->pkrget($uid);
+    $tag_keys = $kv->get($uid.'u');
 
     foreach($tag_keys as $tag_key)
     {
         $tag_val_json = $kv->get($tag_key);
-        $tag_val = json_decode($tag_val)
+        $tag_val = json_decode($tag_val);
         array_push($tag_list, $tag_val);
     }
 
