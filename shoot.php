@@ -7,11 +7,11 @@ $uid = $_POST["uid"];
 
 /*********
 
- get the friend list (bilateral) uid list
+  get the friend list (bilateral) uid list
 
- return an array
+  return an array
 
-*********/
+ *********/
 function get_friend_list()
 {
     global $access_token;
@@ -28,11 +28,11 @@ function get_friend_list()
 
 /************
 
-get a specified property value from a specified user
+  get a specified property value from a specified user
 
-type of the return value depends on the property value type
+  type of the return value depends on the property value type
 
-************/
+ ************/
 function get_user_property($uid, $property)
 {
     global $access_token;
@@ -90,9 +90,11 @@ function filter($friendlist, $property_name, $relation, $value)
  *******************/
 function processMessage($message)
 {
-    //global $message;
+    global $uid;
+    global $kv;
+
     $friendlist = get_friend_list();
-    $user_uid = global $uid;
+    $user_uid = $uid;
     $defined_tags = getTagList($user_uid);
 
     // step: 1. scan the message and match the tags
@@ -100,13 +102,15 @@ function processMessage($message)
     //       3. replace tags
 
     // step 1
-
     // get the tag from the raw message
-    preg_match_all("/@\w+|[\x{4e00}-\x{9fa5}]+/u", $message, $tags);
+    preg_match_all("/@\w+/", $message, $tags);
 
-    foreach($defined_tags as $defined_tag)
+    foreach($tags as $tag)
     {
-        foreach($tags as $tag)
+        ////////////////////////////////////////
+        $tag = array_shift($tag); // this is a bug code, we have to remove the duplicated tags
+        ////////////////////////////////////////
+        foreach($defined_tags as $defined_tag)
         {
             if(strcmp($tag, $defined_tag["tag_name"]) == 0)
             {
@@ -132,18 +136,18 @@ function processMessage($message)
 
                 $message = str_replace($tag, $namelist, $message);
             }
+            $result = $message;
+            return $result;
         }
-        $result = $message;
-        return $result;
     }
 }
 /****************************
 
-send the processed message
+  send the processed message
 
-return 0 or other ...
+  return 0 or other ...
 
-****************************/
+ ****************************/
 function sendMessage()
 {
     global $access_token;
