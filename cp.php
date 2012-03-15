@@ -1,15 +1,7 @@
 <?php
 require("kvdb.php");
-
 $uid = $_POST["uid"];
-
-$defined_tags = getTagList($uid+'u');
-
-if(isset($_POST["tag_name"]))
-{
-    addTag($uid+'u', $_POST["tag_name"], $_POST["property_name"], $_POST["relation"], $_POST["value"]);
-}
-
+$defined_tags = getTagList($uid);
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +32,8 @@ if(isset($_POST["tag_name"]))
             ?>
         </table>
         <br />
-        <form name="add_form" method="POST" action="">
+        <form name="add_form" method="POST" action="add.php">
+            <input type="hidden" name="uid" value="<?php echo $uid ?>">
             tag_name: <input type="text" name="tag_name">
             <br>
             property_name: <input type="text" name="property_name">
