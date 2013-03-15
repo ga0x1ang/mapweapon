@@ -13,8 +13,8 @@ require_once("curl.php");
 function getAccessToken()
 {
     $url = "https://api.weibo.com/oauth2/access_token";
-    $client_secret = "client_secret=8fb1563f1366a12f8f21418f01e07acf";
-    $client_id = "client_id=1629659974";
+    $client_secret = "";
+    $client_id = "";
     $code = "code=".$_GET["code"];
     $redirect_uri = "redirect_uri=http://mapweapon.sinaapp.com/mapweapon.php";
     $grant_type = "grant_type=authorization_code";
